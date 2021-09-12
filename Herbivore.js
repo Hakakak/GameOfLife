@@ -1,9 +1,9 @@
-class Xotaker{
+class Herbivore{
     constructor(x,y){
-        this.x = x
-        this.y = y
-        this.energy = 13
-        this.direction = []
+        this.x = x;
+        this.y = y;
+        this.energy = 13;
+        this.direction = [];
     }
 
     updateDirection(){
@@ -16,7 +16,7 @@ class Xotaker{
             [this.x - 1, this.y + 1],
             [this.x    , this.y + 1],
             [this.x + 1, this.y + 1]
-        ]
+        ];
     }
 
     chooseCell(ch){
@@ -40,39 +40,38 @@ class Xotaker{
     }
 
     move(){
-        this.energy--
-
-        if (this.energy >= 15) {
-            this.mul()
-        }
-
-        let arr = this.chooseCell(1)
+        this.energy--;
+        let arr = this.chooseCell(1);
+        
         if(arr.length > 0)
         {
-            this.eat()
+            this.eat();
+            if (this.energy >= 15) {
+                this.mul();
+            }
         }
         else
         {
-            arr = this.chooseCell(0)
-            let emptyCell = random(arr)
-
+            arr = this.chooseCell(0);
+            let emptyCell = random(arr);
             if (emptyCell) {
-                let x = emptyCell[0]
-                let y = emptyCell[1]
+                let x = emptyCell[0];
+                let y = emptyCell[1];
 
-                matrix[y][x] = 2
-                matrix[this.y][this.x] = 0
+                matrix[y][x] = 2;
+                matrix[this.y][this.x] = 0;
 
-                this.x = x
-                this.y = y
+                this.x = x;
+                this.y = y;
+                
+                if(this.energy <= 0){
+                    this.die();
+                }
             }
         }
 
-        if(this.energy <= 0){
-            this.die()
-        }
+        
     }
-
     eat(){
         var newCell = random(this.chooseCell(1));
 
@@ -92,15 +91,15 @@ class Xotaker{
 
             this.y = newY;
             this.x = newX;
-            this.energy += 2;
+            this.energy += 3;
         }
     }
     
     die(){
         matrix[this.y][this.x] = 0
-            for (var i in xotakerArr) {
-                if (this.x == xotakerArr[i].x && this.y == xotakerArr[i].y) {
-                    xotakerArr.splice(i, 1)
+            for (var i in herbArr) {
+                if (this.x == herbArr[i].x && this.y == herbArr[i].y) {
+                    herbArr.splice(i, 1);
                     break;
                 }
             }
@@ -109,9 +108,9 @@ class Xotaker{
     mul(){
         var newCell = random(this.chooseCell(0));
 
-        if (this.energy >= 15 && newCell) {
-            var newGrassEater = new Xotaker(newCell[0], newCell[1]);
-            xotakerArr.push(newGrassEater);
+        if (newCell) {
+            var cow = new Herbivore(newCell[0], newCell[1]);
+            herbArr.push(cow);
             matrix[newCell[1]][newCell[0]] = 2;
             this.energy = 8;
         }

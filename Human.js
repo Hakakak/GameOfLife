@@ -3,6 +3,7 @@ class Human{
         this.x = x;
         this.y = y;
         this.energy = 30;
+        this.strength = random(round(0,5));
         this.direction = [];
     }
 
@@ -61,8 +62,6 @@ class Human{
 
     move(){
         this.energy--;
-
-        matrix[this.y][this.x] = 5;
         
         let arr2 = this.chooseCell(2);
         let arr3 = this.chooseCell(3);
@@ -94,6 +93,8 @@ class Human{
                 matrix[y][x] = 5;
                 matrix[this.y][this.x] = 0;
 
+                this.energy++;
+
                 this.x = x;
                 this.y = y;
                 
@@ -106,57 +107,63 @@ class Human{
         
     }
     kill (){
-        this.updateDirection();
         var enemy2 = random(this.chooseCell(2));
         var enemy3 = random(this.chooseCell(3));
+        var enemy5 = random(this.chooseCell(5));
+
 
         if (enemy3) {
-            for (let i = 0 ; i < this.direction.length ; i++){
+            for (let i = 0 ; i < this.strength ; i++){
                 var x = enemy3[0];
                 var y = enemy3[1];
 
                 matrix[y][x] = 0;
 
-                for (let i in predatorArr) {
-                    if (x == predatorArr[i].x && y == predatorArr[i].y) {
-                        predatorArr.splice(i, 1);
+                for (let i in predArr) {
+                    if (x == predArr[i].x && y == predArr[i].y) {
+                        predArr.splice(i, 1);
                         break;
                     }
                 }
-
-                let herb = new Xotaker(x,y);
-                xotakerArr.push(herb);
-
-
             } 
         }
         if (enemy2) {
-            for (let i = 0; i < this.direction.length ; i++){
+            for (let i = 0; i < this.strength ; i++){
                 var x = enemy2[0];
                 var y = enemy2[1];
 
                 matrix[y][x] = 0;
 
-                for (let i in xotakerArr) {
-                    if (x == xotakerArr[i].x && y == xotakerArr[i].y) {
-                        xotakerArr.splice(i, 1);
+                for (let i in herbArr) {
+                    if (x == herbArr[i].x && y == herbArr[i].y) {
+                        herbArr.splice(i, 1);
                         break;
                     }
                 }
-
-                let pred = new Predator(this.x,this.y);
-                predatorArr.push(pred);
-
-                for (let i in humanArr) {
-                    if (this.x == humanArr[i].x && this.y == humanArr[i].y){
-                        humanArr.splice(i,1);
-                        break;
-                    }
-                }
-
-                matrix[this.y][this.x] = 0;
             }
             
+        }
+        if (enemy5) {
+            var x = enemy5[0];
+            var y = enemy5[1];
+
+            matrix[y][x] = 0;
+
+            for (let i in humanArr) {
+                if (x == humanArr[i].x && y == humanArr[i].y) {
+                    if (humanArr[i].strength < this.strength){
+                        humanArr.splice(i, 1);
+                        break;
+                    } else {
+                        for (let i in humanArr) {
+                            if (this.x == humanArr[i].x && this.y == humanArr[i].y) {
+                                humanArr.splice(i, 1);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
     
