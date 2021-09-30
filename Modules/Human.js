@@ -5,7 +5,7 @@ module.exports = class Human{
         this.x = x;
         this.y = y;
         this.energy = 30;
-        this.strength = random(round(0,5));
+        this.strength = random(Math.round(0,5));
         this.direction = [];
     }
 

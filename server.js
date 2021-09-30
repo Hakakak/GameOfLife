@@ -3,7 +3,7 @@ const Herbivore = require("./modules/Herbivore");
 const Predator = require("./modules/Predator");
 const Storm = require("./modules/Storm");
 const Human = require("./modules/Human");
-const allStarter = require("./modules/AllStarter");
+const AllStarter = require("./modules/AllStarter");
 const random = require("./modules/random");
 
 
@@ -17,7 +17,7 @@ predArr = [];
 starter = [];
 stormArr = [];
 humanArr = [];
-starter = [new allStarter()];
+starter = [new AllStarter()];
 
 
 
@@ -45,7 +45,7 @@ function matrixGenerator(matrixSize, grass, grassEater, grassEaterEater) {
         matrix[customY][customX] = 3;
     }
 }
-matrixGenerator(side, 10, 10);
+matrixGenerator(side, 20, 10);
 //! Creating MATRIX -- END
 
 
@@ -98,8 +98,6 @@ function deleteScreen() {
     humanArr = [];
 }
 
-var a = 0;
-
 setInterval(() => {
     if (grassArr[0] !== undefined) {
         for (var i in grassArr) {
@@ -130,17 +128,7 @@ setInterval(() => {
         for (var i in starter) {
             starter[i].starterr();
         }
-    }
-
-    console.log(a);
-
-    if(a >= 20){
-        deleteScreen();
-        creatingObjects(side, 10, 10);
-        a = 0;
-    }
-
-    a++;
+    }   
 
     //! Object to send
     let sendData = {

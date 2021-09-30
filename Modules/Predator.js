@@ -7,14 +7,6 @@ module.exports = class Predator extends LivingEntity{
         this.energy = 40;
     }
 
-    updateDirection(){
-        return super.updateDirection();
-    }
-
-    chooseCell(ch){
-        return super.chooseCell(ch);
-    }
-
     move(){
         this.energy--;
         let arr = this.chooseCell(2);

@@ -1,4 +1,6 @@
 const random = require("./random");
+const Predator = require("./Predator");
+const Herbivore = require("./Herbivore");
 
 module.exports = class Storm {
     constructor(x,y,up,left){
@@ -7,7 +9,7 @@ module.exports = class Storm {
         this.up = up;
         this.left = left;
         this.speed = 0;
-        this.randm = round(random(1,3));
+        this.randm = Math.round(random(1,3));
         this.directions = [];
     }
 
@@ -75,7 +77,7 @@ module.exports = class Storm {
 
             if (this.randm == 2){
                 if (herbArr.length <= 10){
-                    let randoom = round(random(1,30));
+                    let randoom = Math.round(random(1,30));
                     if (randoom == 2){
                         let herb = new Herbivore(this.x,this.y);
                         herbArr.push(herb);
@@ -94,7 +96,7 @@ module.exports = class Storm {
                     }
                 }
             } else if (this.randm == 1){
-                let randoom = round(random(1,100));
+                let randoom = Math.round(random(1,100));
                 if (randoom == 2){
                     let pred = new Predator(this.x,this.y);
                     predArr.push(pred);

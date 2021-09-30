@@ -1,12 +1,15 @@
 const random = require("./random");
+const Storm = require("./Storm");
+const Human = require("./Human");
 
-module.exports = class allStarter {
+module.exports = class AllStarter {
     constructor (){
         this.randm;
     }
 
     starterr(){
         this.randm = Math.round(random(1,10));
+        console.log(this.randm);
         if (this.randm == 2){
             let y = Math.round(random(0,matrix.length-1));
             let x = Math.round(random(0,1));
@@ -40,7 +43,7 @@ module.exports = class allStarter {
                 }
 
                 var hum = new Human(x,y);
-                humanArr.push(hum); 
+                humanArr.push(hum);
             }
         }
     }
