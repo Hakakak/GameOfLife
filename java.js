@@ -15,7 +15,7 @@ function generateMatrix(side, GrassCount, GrassEaterCount, PredatorCount){
         let arr = [];  
         matrix.push(arr);
         for (let j = 0; j < side; j++) {   
-            matrix[i].push(0);     
+            matrix[i].push(0);
         }     
     }
 
