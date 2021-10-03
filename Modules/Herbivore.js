@@ -14,7 +14,7 @@ module.exports = class Herbivore extends LivingEntity{
         if(arr.length > 0)
         {
             this.eat();
-            if (this.energy >= 15) {
+            if (this.energy >= 16) {
                 this.mul();
             }
         }

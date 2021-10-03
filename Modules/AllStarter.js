@@ -8,8 +8,7 @@ module.exports = class AllStarter {
     }
 
     starterr(){
-        this.randm = Math.round(random(1,10));
-        console.log(this.randm);
+        this.randm = Math.round(random(1,20));
         if (this.randm == 2){
             let y = Math.round(random(0,matrix.length-1));
             let x = Math.round(random(0,1));

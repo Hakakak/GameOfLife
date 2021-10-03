@@ -4,18 +4,19 @@ const random = require("./random");
 module.exports = class Grass extends LivingEntity{
     constructor(x,y){
         super(x,y);
-        this.multiply = 0;
+        this.energy = 0;
+        this.productionRate = Math.round(random(4,6));
     }
 
 
     mul(){
-        this.multiply++;
+        this.energy++;
 
         matrix[this.y][this.x] = 1;
 
         let randomCell = random(this.chooseCell(0));
 
-        if (this.multiply >= 4 && randomCell) { 
+        if (this.energy >= this.productionRate && randomCell) { 
             
             let x = randomCell[0];
             let y = randomCell[1];
@@ -23,7 +24,7 @@ module.exports = class Grass extends LivingEntity{
             matrix[y][x] = 1;
             let gr = new Grass(x,y);
             grassArr.push(gr);
-            this.multiply = 0;
+            this.energy = 0;
         }
     }
         

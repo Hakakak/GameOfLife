@@ -1,3 +1,4 @@
+const Grass = require("./Grass");
 const random = require("./random");
 
 module.exports = class Human{
@@ -65,9 +66,11 @@ module.exports = class Human{
     move(){
         this.energy--;
         
+        let arr1 = this.chooseCell(1);
         let arr2 = this.chooseCell(2);
         let arr3 = this.chooseCell(3);
-        if(arr2.length > 0 || arr3.length > 0)
+        let arr5 = this.chooseCell(5);
+        if(arr2.length > 0 || arr3.length > 0 || arr5.length > 0)
         {
             this.kill();
         }
@@ -75,6 +78,10 @@ module.exports = class Human{
         {
             let emptyCell = random(this.chooseCell(0));
             let emptyGrass = random(this.chooseCell(1));
+            if (arr1.length < 1){
+                let grass = new Grass(this.x,this.y);
+                grassArr.push(grass);
+            }
             if (emptyGrass) {
                 let x = emptyGrass[0];
                 let y = emptyGrass[1];
