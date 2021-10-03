@@ -27,7 +27,7 @@ header {
 }
 
 .Game-Of-Life {
-    font-size: 100px;
+    font-size: 300%;
     align-self: center;
     margin: 0% 0% 0% 1%;
 }
@@ -87,17 +87,21 @@ header {
   }
 
 #countChart {
-    display: flex;
-    align-self: center;
-    float: left;
     padding: 5px;
     border-radius: 1.5%;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    width: 1400px;
-    height: 1400px;
+    width: 100vh;
+    height: 100%;
 }
 
-#defaultCanvas0 {
-    display: inline;
-    float: left;
+/* #defaultCanvas0 {
+    position: absolute;
+    left: 10%;
+    top: 25%;
+} */
+
+.canvas-div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }

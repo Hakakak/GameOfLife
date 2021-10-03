@@ -1,11 +1,13 @@
 const socket = io();
-let seasonChangerArray = document.querySelectorAll(".change-season");
-let i = 0;
+const seasonChangerArray = document.querySelectorAll(".change-season");
+const restartButton = document.querySelector(".restart-button");
+let isChartCreated = false;
+let isCanvasCreated = false;
 let Mychart;
 
 function setup() {
 
-    var side = 30;
+    var side = 15;
 
     var matrix = [];
     var season = {Grass: "#1A921B" ,Herbivore : "#FFE01B" ,Predator : "#F72121" ,Human: "#AB7B33"};
@@ -15,43 +17,9 @@ function setup() {
         season = data;
     })
     socket.on("chart", (data) => {
-        if(i == 0){
-            i++;
-            Mychart = new Chart(document.querySelector("#countChart"), {
-                type:"bar",
-                data: data.data,
-                options: {
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    ticks: {
-                                        font: {
-                                            size: 30
-                                        }
-                                    }
-                                },
-                                x: {
-                                    ticks: {
-                                        font: {
-                                            size: 20
-                                        }
-                                    }
-                                },
-                            },
-                            responsive: false,
-                        },
-                    plugins: [plugin = {
-                        id: 'custom_canvas_background_color',
-                        beforeDraw: (chart) => {
-                          const ctx = chart.canvas.getContext('2d');
-                          ctx.save();
-                          ctx.globalCompositeOperation = 'destination-over';
-                          ctx.fillStyle = 'white';
-                          ctx.fillRect(0, 0, chart.width, chart.height);
-                          ctx.restore();
-                        }
-                      }]
-                });
+        if(!isChartCreated){
+            Mychart = new Chart(document.querySelector("#countChart"), data.config);
+            isChartCreated = true;
         } else {
             Mychart.data.datasets[0].data = data.data.datasets[0].data;
             Mychart.update();
@@ -63,7 +31,12 @@ function setup() {
     function drawCreatures(data) {
         matrix = data.matrix;
 
-        createCanvas(matrix[0].length * side, matrix.length * side)
+        if(!isCanvasCreated){
+            createCanvas(matrix[0].length * side, matrix.length * side);
+            document.querySelector(".canvas-div").appendChild(document.querySelector("#defaultCanvas0"))
+            isCanvasCreated = true;         
+        }
+
         background('#acacac');
 
         socket.emit("changeChart")
@@ -87,3 +60,7 @@ seasonChangerArray.forEach(seasonButton => {
         socket.emit("changeSeason", seasonButton.getAttribute("value") );
     })
 });
+
+restartButton.addEventListener("click", () => {
+    socket.emit("restart");
+})

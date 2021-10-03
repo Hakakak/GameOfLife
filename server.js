@@ -9,8 +9,6 @@ const random = require("./modules/random");
 
 matrix = [];
 MatrixSide = 50;
-grassHashiv = 0;
-herbCounter = 0;
 grassArr = [];
 herbArr = []; 
 predArr = [];
@@ -120,11 +118,40 @@ function changeSeason(seasonId) {
 io.on("connection", (socket) => {
     socket.on("changeSeason", changeSeason)
     socket.on("changeChart", setupChart)
+    socket.on("restart", restart)
 })
 
+function restart() {
+
+    grassArr = [];
+    herbArr = [];
+    predArr = [];
+    stormArr = [];
+    humanArr = [];
+
+    entitycount = new EntityCount();
+    seasonManager = new SeasonManager();
+
+    matrixGenerator(MatrixSide, 20, 10, 5);
+    creatingObjects();
+
+    console.log(Object.keys(entitycount.count));
+
+    io.sockets.emit("data", {matrix: matrix})
+}
+
 function setupChart(){
+    const string = Object.keys(entitycount.count).join(" ") + " ";
+    const labels = string.split("Count ");
+    labels.pop();
+    for (const i in labels) {
+        const str = labels[i];
+        const str2 = str.charAt(0).toUpperCase() + str.slice(1);
+        labels[i] = str2;
+    }
     const data = {
-        labels: Object.keys(entitycount.count),
+        labels: labels,
+        //labels: ["Grass", "Herbivore", "Predator"],
         datasets: [{
             label: 'Entity count',
             data: [
@@ -152,23 +179,42 @@ function setupChart(){
             hoverOffset: 4,
           }]
     }
-    const plugin = {
-        id: 'custom_canvas_background_color',
-        beforeDraw: (chart) => {
-          const ctx = chart.canvas.getContext('2d');
-          ctx.save();
-          ctx.globalCompositeOperation = 'destination-over';
-          ctx.fillStyle = 'lightGreen';
-          ctx.fillRect(0, 0, chart.width, chart.height);
-          ctx.restore();
-        }
-      };
+    const config = {
+        type:"bar",
+        data: data,
+        options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                font: {
+                                    size: 30
+                                }
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                font: {
+                                    size: 20
+                                }
+                            }
+                        },
+                    },
+                    responsive: false,
+                },
+        plugins: [{
+            id: 'custom_canvas_background_color',
+                beforeDraw: (chart) => {
+                    const ctx = chart.canvas.getContext('2d');
+                    ctx.save();
+                    ctx.globalCompositeOperation = 'destination-over';
+                    ctx.fillStyle = 'white';
+                    ctx.fillRect(0, 0, chart.width, chart.height);
+                    ctx.restore();
+                }
+            }],
+    }
 
-      sendData = {
-          data: data,
-          plugin: plugin
-      }
-
-    io.sockets.emit("chart", sendData);
+    io.sockets.emit("chart", {config: config, data: data});
     
 }
