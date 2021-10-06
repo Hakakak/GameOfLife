@@ -5,7 +5,7 @@ module.exports = class Grass extends LivingEntity{
     constructor(x,y){
         super(x,y);
         this.energy = 0;
-        this.productionRate = Math.round(random(4,6));
+        this.productionRate = gameManager.gameProductionRate;
     }
 
 

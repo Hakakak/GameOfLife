@@ -1,6 +1,9 @@
 const socket = io();
 const seasonChangerArray = document.querySelectorAll(".change-season");
 const restartButton = document.querySelector(".restart-button");
+const killEntityArray = document.querySelectorAll(".kill-entity");
+const spawnEntityArray = document.querySelectorAll(".spawn-entity");
+const fpsbutton = document.querySelector(".FRChanger");
 let isChartCreated = false;
 let isCanvasCreated = false;
 let Mychart;
@@ -10,7 +13,7 @@ function setup() {
     var side = 15;
 
     var matrix = [];
-    var season = {Grass: "#1A921B" ,Herbivore : "#FFE01B" ,Predator : "#F72121" ,Human: "#AB7B33"};
+    season = {Grass: "#1A921B" ,Herbivore : "#FFE01B" ,Predator : "#F72121" ,Human: "#AB7B33"};
 
     socket.on("data", drawCreatures);
     socket.on("season", (data) => {
@@ -39,7 +42,7 @@ function setup() {
 
         background('#acacac');
 
-        socket.emit("changeChart")
+        socket.emit("changeChart");
 
         for (var i = 0; i < matrix.length; i++) {
             for (var j = 0; j < matrix[i].length; j++) {
@@ -61,6 +64,22 @@ seasonChangerArray.forEach(seasonButton => {
     })
 });
 
+killEntityArray.forEach(killButton => {
+    killButton.addEventListener("click", () => {
+        socket.emit("killEntity", killButton.getAttribute("value"));
+    })
+});
+
+spawnEntityArray.forEach(spawnButton => {
+    spawnButton.addEventListener("click", () => {
+        socket.emit("spawnEntity", spawnButton.getAttribute("value"));
+    })
+});
+
 restartButton.addEventListener("click", () => {
     socket.emit("restart");
+})
+
+fpsbutton.addEventListener("change", () => {
+    socket.emit("fpsChange", fpsbutton.value);
 })

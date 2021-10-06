@@ -15,10 +15,18 @@
             <li class="drop">
                 <p class="p">Kill ...<i class="fas fa-angle-down"></i></p>
                 <div class="droping">
-                    <p class ="kill-entity" value ="grass">Kill Grass</p>
-                    <p class ="kill-entity" value ="herbivore">Kill Herbivores</p>
-                    <p class ="kill-entity" value ="predator">Kill Predators</p>
-                    <p class ="kill-entity" value ="all">Kill All</p>
+                    <p class ="kill-entity" value ="Grass">Kill Grass</p>
+                    <p class ="kill-entity" value ="Herbivore">Kill Herbivores</p>
+                    <p class ="kill-entity" value ="Predator">Kill Predators</p>
+                    <p class ="kill-entity" value ="All">Kill All</p>
+                </div>
+            </li>
+            <li class="drop">
+                <p class="p">Spawn ...<i class="fas fa-angle-down"></i></p>
+                <div class="droping">
+                    <p class ="spawn-entity" value ="Grass">Spawn Grass</p>
+                    <p class ="spawn-entity" value ="Herbivore">Spawn Herbivores</p>
+                    <p class ="spawn-entity" value ="Predator">Spawn Predators</p>
                 </div>
             </li>
             <li class="drop">
@@ -30,7 +38,13 @@
                     <p class="change-season" value ="Autumn">Autumn</p>
                 </div>
             </li>
-            <li><a class="drop">About</a></li>
+            <li class="drop">
+                <p class="p">FrameRate...<i class="fas fa-angle-down"></i></p>
+                <div class="droping">
+                    <input type="range" class="FRChanger" min="10" max="100" step="10"></input>
+                    <p class="p">FrameRate</p>
+                </div>
+            </li>
         </ul>
     </header>
     <div class="canvas-div">
@@ -40,6 +54,7 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="java.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
 </body>
 
 </html>

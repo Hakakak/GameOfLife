@@ -1,3 +1,5 @@
 #Ignored directories
 
 /node_modules
+
+/statistics.json

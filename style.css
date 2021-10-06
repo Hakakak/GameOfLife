@@ -1,3 +1,6 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300&display=swap');
+
 canvas {
     display: block;
     margin: 0 auto;
@@ -12,7 +15,7 @@ body {
     flex-direction: column;
     flex-wrap:wrap;
     background-color: rgb(255, 218, 218);
-    font-family: 'Noto Sans', sans-serif !important;
+    font-family: 'Raleway', sans-serif;
 }
 
 header {
@@ -52,14 +55,15 @@ header {
 }
 
 .drop {
+    width: fit-content;
     padding: 15px 15px 0px 15px;
 }
 
 .drop:hover .droping{
-    position:fixed;
-    height: 18%;
+    position: fixed;
+    height: fit-content;
     opacity: 1;
-    transition: all 0.2s ease-in-out;
+    transition: all 0.3s ease-in-out;
   }
 
 .droping {
@@ -70,12 +74,18 @@ header {
     opacity: 0;
     height: 0px;
     background-color: #f9f9f9;
-    min-width: 160px;
+    min-width: max-content;
     border: grey solid 1px;
     border-radius: 7px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
 }
+
+.change-season{
+    background-color: transparent;
+    transition: all 0.2s ease-in-out;
+}
+
 
 .droping  p {
     color: black;
@@ -90,18 +100,21 @@ header {
     padding: 5px;
     border-radius: 1.5%;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    width: 100vh;
+    width: 80vh;
     height: 100%;
 }
-
-/* #defaultCanvas0 {
-    position: absolute;
-    left: 10%;
-    top: 25%;
-} */
 
 .canvas-div {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+#defaultCanvas0{
+    width: 70vh !important;
+    height: 70vh !important;
+}
+
+.FRChanger {
+    width: 10vh;
 }

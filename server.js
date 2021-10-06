@@ -1,14 +1,28 @@
-const Grass = require("./modules/Grass");
-const Herbivore = require("./modules/Herbivore");
-const Predator = require("./modules/Predator");
-const AllStarter = require("./modules/AllStarter");
-const EntityCount = require("./modules/EntityCount");
-const SeasonManager = require("./modules/SeasonManager");
-const random = require("./modules/random");
+const Grass = require("./Modules/Grass");
+const Herbivore = require("./Modules/Herbivore");
+const Predator = require("./Modules/Predator");
+const AllStarter = require("./Modules/AllStarter");
+const EntityCount = require("./Modules/EntityCount");
+const SeasonManager = require("./Modules/SeasonManager");
+const MatrixCreator = require("./Modules/MatrixCreator");
+const GameManager = require("./Modules/GameManager");
 
+const express = require('express');
+var app = express();
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
+app.use(express.static("."));
+app.get('/', function (req, res) {
+    res.redirect('main.html');
+});
+server.listen(3000, () => {
+    console.log("Server is running just fine");
+});
+const fs = require("fs");
 
 matrix = [];
 MatrixSide = 50;
+gamefps = 100;
 grassArr = [];
 herbArr = []; 
 predArr = [];
@@ -24,48 +38,19 @@ seasons = {
 }
 entitycount = new EntityCount();
 seasonManager = new SeasonManager();
+gameManager = new GameManager();
+onCooldown = false;
 
+io.on("connection", (socket) => {
+    socket.on("changeSeason", changeSeason);
+    socket.on("killEntity", killEntity);
+    socket.on("spawnEntity", spawnEntity);
+    socket.on("changeChart", setupChart);
+    socket.on("restart", restart);
+    socket.on("fpsChange", (fps) => {gamefps = fps});
+})
 
-function matrixGenerator(matrixSize, grass, grassEater, grassEaterEater) {
-    for (let i = 0; i < matrixSize; i++) {
-        matrix[i] = [];
-        for (let o = 0; o < matrixSize; o++) {
-            matrix[i][o] = 0;
-        }
-    }
-    for (let i = 0; i < grass; i++) {
-        let customX = Math.floor(random(matrixSize));
-        let customY = Math.floor(random(matrixSize));
-        matrix[customY][customX] = 1;
-    }
-    for (let i = 0; i < grassEater; i++) {
-        let customX = Math.floor(random(matrixSize));
-        let customY = Math.floor(random(matrixSize));
-        matrix[customY][customX] = 2;
-    }
-    for (let i = 0; i < grassEaterEater; i++) {
-        let customX = Math.floor(random(matrixSize));
-        let customY = Math.floor(random(matrixSize));
-        matrix[customY][customX] = 3;
-    }
-}
-matrixGenerator(MatrixSide, 20, 10, 5);
-
-
-
-const express = require('express');
-var app = express();
-var server = require('http').Server(app);
-var io = require('socket.io')(server);
-app.use(express.static("."));
-app.get('/', function (req, res) {
-    res.redirect('main.html');
-});
-server.listen(3000, () => {
-    console.log("Server is running just fine");
-});
-
-
+MatrixCreator(MatrixSide, 20, 10, 5, true);
 
 function creatingObjects() {
     for (var y = 0; y < matrix.length; y++) {
@@ -85,59 +70,103 @@ function creatingObjects() {
 }
 creatingObjects();
 
-setInterval(() => {
+function RunGame() {
     if (grassArr[0] !== undefined) for (const i in grassArr) { grassArr[i].mul()};
     if (herbArr[0] !== undefined) for (const i in herbArr) { herbArr[i].move()};
     if (predArr[0] !== undefined) for (const i in predArr) { predArr[i].move()};
     if (stormArr[0] !== undefined) for (const i in stormArr) { stormArr[i].mind()};
     if (humanArr[0] !== undefined) for (const i in humanArr) { humanArr[i].move()};
     if (starter[0] !== undefined) for (const i in starter) { starter[i].starterr()};   
-
+    
     entitycount.count.grassCount = grassArr.length;
     entitycount.count.herbivoreCount = herbArr.length;
     entitycount.count.predatorCount = predArr.length;
     entitycount.count.stormCount = stormArr.length;
     entitycount.count.humanCount = humanArr.length;
+    
+    io.sockets.emit("data", {matrix: matrix});
 
-    let sendData = {
-        matrix: matrix,
-    }
+    interval = setTimeout(RunGame, gamefps * 10);
+}
 
-    io.sockets.emit("data", sendData);
-}, 1000);
+setTimeout(RunGame, gamefps * 10)
 
 function changeSeason(seasonId) {
     const seasonIds = Object.keys(seasons);
     seasonIds.forEach(season => {
         if(season == seasonId){
+            gameManager.setProductionRate(season);
             io.sockets.emit("season", seasonManager.giveSeasonColor(season));
         }
     });
 }
 
-io.on("connection", (socket) => {
-    socket.on("changeSeason", changeSeason)
-    socket.on("changeChart", setupChart)
-    socket.on("restart", restart)
-})
+function deleteEntityType(id) {
+    switch (id) {
+        case 1:
+            grassArr.forEach(grass => {
+                matrix[grass.y][grass.x] = 0;
+            });
+            grassArr = []
+        break;
+        case 2:
+            herbArr.forEach(herbivore => {
+                matrix[herbivore.y][herbivore.x] = 0;
+            });
+            herbArr = [];
+        break;
+        case 3:
+            predArr.forEach(predator => {
+                matrix[predator.y][predator.x] = 0;
+            });
+            predArr = [];
+        break;
+    }
+}
+
+
+function killEntity(entityId) {
+    if(grassArr[0] !== undefined) if(entityId == grassArr[0].constructor.name)  deleteEntityType(1);
+    if(herbArr[0] !== undefined) if(entityId == herbArr[0].constructor.name)  deleteEntityType(2);
+    if(predArr[0] !== undefined) if(entityId == predArr[0].constructor.name)  deleteEntityType(3);
+    if(entityId === "All") {
+        MatrixCreator(MatrixSide,0,0,0,true);
+        grassArr = [];
+        herbArr = [];  
+        predArr = [];
+        stormArr = [];
+        humanArr = [];
+    }
+}
+
+function spawnEntity(entityId) {
+    if(grassArr[0] !== undefined) if(entityId == grassArr[0].constructor.name)  MatrixCreator(MatrixSide,10,0,0,false);
+    if(herbArr[0] !== undefined) if(entityId == herbArr[0].constructor.name)  MatrixCreator(MatrixSide,0,10,0,false);
+    if(predArr[0] !== undefined) if(entityId == predArr[0].constructor.name)  MatrixCreator(MatrixSide,0,0,10,false);
+}
 
 function restart() {
+    if (!onCooldown){
+        for (let i = 0; i < MatrixSide; i++) {
+            for (let j = 0; j < MatrixSide; j++) {
+                matrix[i][j] = 0;
+            }
+        }
 
-    grassArr = [];
-    herbArr = [];
-    predArr = [];
-    stormArr = [];
-    humanArr = [];
+        grassArr = [];
+        herbArr = [];
+        predArr = [];
+        stormArr = [];
+        humanArr = [];
 
-    entitycount = new EntityCount();
-    seasonManager = new SeasonManager();
+        entitycount = new EntityCount();
 
-    matrixGenerator(MatrixSide, 20, 10, 5);
-    creatingObjects();
+        MatrixCreator(MatrixSide, 20, 10, 5, true);
+        creatingObjects();
 
-    console.log(Object.keys(entitycount.count));
-
-    io.sockets.emit("data", {matrix: matrix})
+    } else {
+        setInterval(() => {onCooldown = false}, 5000);
+    }
 }
 
 function setupChart(){
@@ -151,7 +180,6 @@ function setupChart(){
     }
     const data = {
         labels: labels,
-        //labels: ["Grass", "Herbivore", "Predator"],
         datasets: [{
             label: 'Entity count',
             data: [
@@ -218,3 +246,10 @@ function setupChart(){
     io.sockets.emit("chart", {config: config, data: data});
     
 }
+
+function writeStatistics() {
+    fs.writeFile("statistics.json", JSON.stringify(entitycount.count), function () {});
+}
+
+setInterval(writeStatistics, 250 * 60);
+
